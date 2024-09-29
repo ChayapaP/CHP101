@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Cutting Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function toggleCustomSize() {
+            const originalSizeDropdown = document.getElementById('original_size');
+            const customFields = document.getElementById('custom_fields');
+            if (originalSizeDropdown.value === 'custom') {
+                customFields.style.display = 'block';
+            } else {
+                customFields.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Paper Cutting Calculator</h1>
+        <form method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="original_size">Original paper:</label>
+                    <select name="original_size" id="original_size" onchange="toggleCustomSize()">
+                        <option value="">Select size...</option>
+                        <option value="1600x2400" {% if original_size == '1600x2400' %}selected{% endif %}>1600 mm x 2400 mm</option>
+                        <option value="1840x1590" {% if original_size == '1840x1590' %}selected{% endif %}>1840 mm x 1590 mm</option>
+                        <option value="2080x2490" {% if original_size == '2080x2490' %}selected{% endif %}>2080 mm x 2490 mm</option>
+                        <option value="1550x2350" {% if original_size == '1550x2350' %}selected{% endif %}>1550 mm x 2350 mm</option>
+                        <option value="1550x2400" {% if original_size == '1550x2400' %}selected{% endif %}>1550 mm x 2400 mm</option>
+                        <option value="1600x2320" {% if original_size == '1600x2320' %}selected{% endif %}>1600 mm x 2320 mm</option>
+                        <option value="1016x1780" {% if original_size == '1016x1780' %}selected{% endif %}>1016 mm x 1780 mm</option>
+                        <option value="1676x2111" {% if original_size == '1676x2111' %}selected{% endif %}>1676 mm x 2111 mm</option>
+                        <option value="1640x2300" {% if original_size == '1640x2300' %}selected{% endif %}>1640 mm x 2300 mm</option>
+                        <option value="1550x2300" {% if original_size == '1550x2300' %}selected{% endif %}>1550 mm x 2300 mm</option>
+                        <option value="1570x2204" {% if original_size == '1570x2204' %}selected{% endif %}>1570 mm x 2204 mm</option>
+                        <option value="1300x1680" {% if original_size == '1300x1680' %}selected{% endif %}>1300 mm x 1680 mm</option>
+                        <option value="1626x2320" {% if original_size == '1626x2320' %}selected{% endif %}>1626 mm x 2320 mm</option>
+                        <option value="1790x2490" {% if original_size == '1790x2490' %}selected{% endif %}>1790 mm x 2490 mm</option>
+                        <option value="1650x2320" {% if original_size == '1650x2320' %}selected{% endif %}>1650 mm x 2320 mm</option>
+                        <option value="990x1753" {% if original_size == '990x1753' %}selected{% endif %}>990 mm x 1753 mm</option>
+                        <option value="2200x2440" {% if original_size == '2200x2440' %}selected{% endif %}>2200 mm x 2440 mm</option>
+                        <option value="1600x2380" {% if original_size == '1600x2380' %}selected{% endif %}>1600 mm x 2380 mm</option>
+                        <option value="1560x2340" {% if original_size == '1560x2340' %}selected{% endif %}>1560 mm x 2340 mm</option>
+                        <option value="custom">Custom size</option>
+                    </select>
+                </div>
+                <div class="form-group" id="custom_fields" style="display:none;">
+                    <label>Custom size:</label>
+                    <input type="number" name="custom_width" placeholder="width (mm)" value="{{ custom_width }}">
+                    <input type="number" name="custom_height" placeholder="height (mm)" value="{{ custom_height }}">
+                </div>
+            </div>
+            <h3>Paper to be cut:</h3>
+            {% for i in range(1, 6) %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="size_width_{{ i }}">width:</label>
+                    <input type="number" name="size_width_{{ i }}" value="{{ size_widths[i-1] }}">
+                </div>
+                <div class="form-group">
+                    <label for="size_height_{{ i }}">height:</label>
+                    <input type="number" name="size_height_{{ i }}" value="{{ size_heights[i-1] }}">
+                </div>
+                <div class="form-group">
+                    <label for="quantity_{{ i }}">quantity:</label>
+                    <input type="number" name="quantity_{{ i }}" value="{{ quantities[i-1] }}">
+                </div>
+            </div>
+            {% endfor %}
+            <input type="submit" value="Calculate">
+        </form>
+
+        {% if results %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Paper size</th>
+                    <th>1 sheet of original paper</th>
+                    <th>Original paper required</th>
+                    <th>Waste (m2)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.size }}</td>
+                    <td>{{ result.sheets_per_original }}</td>
+                    <td>{{ result.sheets_needed }}</td>
+                    <td>{{ result.waste }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td> </td>
+                    <td><strong>{{ total_sheets_needed }}</strong></td>
+                    <td><strong>{{ total_waste }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="error">{{ error_message }}</div>
+        {% endif %}
+
+        {% if alert_message %}
+        <div class="alert">{{ alert_message }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
